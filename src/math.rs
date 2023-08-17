@@ -1,2 +1,2 @@
-mod vector3;
-mod ray;
+pub mod ray;
+pub mod vector3;

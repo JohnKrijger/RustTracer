@@ -1,9 +1,12 @@
 use color::Color;
 use minifb::Key;
 use screen::Screen;
+
 mod color;
 mod math;
+mod ray_hits;
 mod screen;
+mod shapes;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
