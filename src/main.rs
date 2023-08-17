@@ -2,6 +2,7 @@ use color::Color;
 use minifb::Key;
 use screen::Screen;
 mod color;
+mod math;
 mod screen;
 
 const WIDTH: usize = 640;
