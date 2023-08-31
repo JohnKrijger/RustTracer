@@ -1,10 +1,29 @@
 use crate::color::Color;
-use crate::math::{ray, vector3};
-use cgmath::{Point3, Vector3};
+use crate::math::{Point, Vector};
+use crate::shapes::material::Material;
 
 pub struct PrimaryHit {
-    pos: Point3<f32>,
-    normal: Vector3<f32>,
+    pos: Point,
+    normal: Vector,
     albedo: Color,
+    material: Material,
     bvh_hit_count: i32,
+}
+
+impl PrimaryHit {
+    pub fn new(
+        pos: Point,
+        normal: Vector,
+        albedo: Color,
+        material: Material,
+        bvh_hit_count: i32,
+    ) -> PrimaryHit {
+        PrimaryHit {
+            pos: pos,
+            normal: normal,
+            albedo: albedo,
+            material: material,
+            bvh_hit_count: bvh_hit_count,
+        }
+    }
 }
