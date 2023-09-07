@@ -2,6 +2,7 @@ use color::Color;
 use minifb::Key;
 use screen::Screen;
 
+mod camera;
 mod color;
 mod math;
 mod ray_hits;

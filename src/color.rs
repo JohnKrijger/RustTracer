@@ -1,3 +1,4 @@
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Color {
     red: f32,
     green: f32,

@@ -11,6 +11,16 @@ impl Vector {
         }
     }
 
+    pub fn up() -> Self {
+        Self::Normal {
+            base: Vector3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        }
+    }
+
     pub fn dot(self, other: Self) -> f32 {
         cgmath::dot(self.base(), other.base())
     }

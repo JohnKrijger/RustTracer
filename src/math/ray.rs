@@ -1,14 +1,18 @@
-use super::Ray;
+use super::{Point, Ray, Vector};
 
 impl Ray {
-    pub fn normalize(&mut self) {
-        self.direction.normalize()
+    pub fn new(origin: Point, direction: Vector) -> Self {
+        Self {
+            origin,
+            direction: direction.normalized(),
+        }
     }
 
-    pub fn normalized(self) -> Self {
-        Ray {
-            direction: self.direction.normalized(),
-            ..self
-        }
+    pub fn origin(&self) -> Point {
+        self.origin
+    }
+
+    pub fn direction(&self) -> Vector {
+        self.direction
     }
 }

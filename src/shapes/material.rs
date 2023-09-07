@@ -1,3 +1,4 @@
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Material {
     Reflective,
     Refractive { refraction_index: f32 },

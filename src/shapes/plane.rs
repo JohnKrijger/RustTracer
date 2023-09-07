@@ -44,13 +44,13 @@ impl Plane {
 
 impl Shape for Plane {
     fn primary_intersection(
-        self,
+        &self,
         ray: crate::math::Ray,
-    ) -> Option<crate::ray_hits::primary_hit::PrimaryHit> {
+    ) -> Vec<crate::ray_hits::primary_hit::PrimaryHit> {
         todo!()
     }
 
-    fn has_intersection_between(self, a: Point, b: Point) -> bool {
+    fn has_intersection_between(&self, a: Point, b: Point) -> bool {
         let a = self.normal.dot(a - Point::origin());
         let b = self.normal.dot(b - Point::origin());
         let d = self.d;
