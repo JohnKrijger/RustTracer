@@ -2,10 +2,7 @@ use crate::math::{random::random_point_in_circle, Point, Ray, Vector};
 use rand::Rng;
 use std::f32::consts::PI;
 
-pub struct Camera<'a, T>
-where
-    T: Rng,
-{
+pub struct Camera {
     pos: Point,
     forward: Vector,
     up: Vector,
@@ -13,17 +10,15 @@ where
     sensor_size: f32,
     focal_length: f32,
     focal_ratio: f32,
-    rng: &'a mut T,
 }
 
-impl<'a, T: Rng> Camera<'a, T> {
+impl Camera {
     pub fn new(
         pos: Point,
         forward: Vector,
         field_of_view: f32,
         focal_length: f32,
         focal_ratio: f32,
-        rng: &'a mut T,
     ) -> Self {
         let forward = forward.normalized();
         let right = forward.cross(Vector::up()).normalized();
@@ -38,7 +33,6 @@ impl<'a, T: Rng> Camera<'a, T> {
             sensor_size,
             focal_length,
             focal_ratio,
-            rng,
         }
     }
 
@@ -46,8 +40,8 @@ impl<'a, T: Rng> Camera<'a, T> {
         self.focal_length / self.focal_ratio
     }
 
-    fn generate_ray(self, screen_x: f32, screen_y: f32) -> Ray {
-        let aperture_pos = random_point_in_circle(self.rng);
+    fn generate_ray(self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
+        let aperture_pos = random_point_in_circle(rng);
         let aperture_diameter = self.apperture_diameter();
         let origin = self.pos
             + self.right * aperture_pos.0 * aperture_diameter

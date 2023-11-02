@@ -4,11 +4,9 @@ use crate::{
     ray_hits::primary_hit::PrimaryHit,
 };
 
-use super::{
-    material::{self, Material},
-    Shape,
-};
+use super::{material::Material, Shape};
 
+#[derive(Debug, Clone, Copy)]
 pub struct Sphere {
     center: Point,
     radius: f32,
@@ -54,5 +52,9 @@ impl Shape for Sphere {
         let to_centre = self.center - from;
         let dir = (to - from).normalized();
         to_centre.dot(dir).powi(2) - to_centre.magnitude_squared() >= self.radius.powi(2)
+    }
+
+    fn material(&self) -> Material {
+        self.material
     }
 }

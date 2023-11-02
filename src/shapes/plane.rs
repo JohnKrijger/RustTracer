@@ -1,13 +1,11 @@
 use crate::{
-    color::{self, Color},
+    color::Color,
     math::{Point, Vector},
 };
 
-use super::{
-    material::{self, Material},
-    Shape,
-};
+use super::{material::Material, Shape};
 
+#[derive(Debug, Clone, Copy)]
 pub struct Plane {
     normal: Vector,
     d: f32,
@@ -55,5 +53,9 @@ impl Shape for Plane {
         let b = self.normal.dot(b - Point::origin());
         let d = self.d;
         a != d && b != d && ((a > d) != (b > d))
+    }
+
+    fn material(&self) -> Material {
+        self.material
     }
 }

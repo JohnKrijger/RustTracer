@@ -6,6 +6,7 @@ mod camera;
 mod color;
 mod math;
 mod ray_hits;
+mod scene;
 mod screen;
 mod shapes;
 
