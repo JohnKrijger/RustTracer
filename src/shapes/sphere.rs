@@ -10,16 +10,14 @@ use super::{material::Material, Shape};
 pub struct Sphere {
     center: Point,
     radius: f32,
-    color: Color,
     material: Material,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f32, color: Color, material: Material) -> Self {
+    pub fn new(center: Point, radius: f32, material: Material) -> Self {
         Self {
             center,
             radius,
-            color,
             material,
         }
     }
@@ -39,12 +37,13 @@ impl Shape for Sphere {
             d if d == 0.0 => vec![cos],
             x => vec![],
         };
-        let color = self.color;
         let material = self.material;
         distances
             .iter()
-            .map(|d| ray.origin() + ray.direction() * *d)
-            .map(|pos| PrimaryHit::new(pos, (pos - self.center).normalized(), color, material, 0))
+            .map(|d| {
+                let pos = ray.origin() + ray.direction() * *d;
+                PrimaryHit::new(pos, (pos - self.center).normalized(), *d, material, 0)
+            })
             .collect::<Vec<PrimaryHit>>()
     }
 

@@ -1,43 +1,53 @@
-use std::{rc::Rc, slice::Iter};
+use std::{
+    rc::{Rc, Weak},
+    slice::Iter,
+};
+
+use rand::Rng;
 
 use crate::{
     camera::Camera,
-    shapes::{plane::Plane, sphere::Sphere, Shape},
+    color::Color,
+    ray_hits::primary_hit::PrimaryHit,
+    shapes::{self, plane::Plane, sphere::Sphere, Shape},
 };
 
 pub struct Scene {
     camera: Camera,
-    planes: Vec<Plane>,
-    spheres: Vec<Sphere>,
+    shapes: Vec<Rc<dyn Shape>>,
 }
 
 impl Scene {
-    pub fn new(
-        camera: Camera,
-        planes: impl Iterator<Item = Plane>,
-        spheres: impl Iterator<Item = Sphere>,
-    ) -> Self {
-        Self {
-            camera,
-            planes: planes.collect(),
-            spheres: spheres.collect(),
-        }
+    pub fn new(camera: Camera, shapes: Vec<Rc<dyn Shape>>) -> Self {
+        Self { camera, shapes }
     }
 
     pub fn camera(self: &Self) -> &Camera {
         &self.camera
     }
 
-    pub fn shapes(self: &Self) -> &dyn Iterator<Item = dyn Shape> {
-        let s: dyn Iterator<Item = dyn Shape> = self.spheres.iter();
-        self.spheres.iter().chain(self.planes.iter()).collect()
+    pub fn shapes(self: &mut Self) -> Vec<Rc<dyn Shape>> {
+        self.shapes.iter().map(|s| Rc::clone(s)).collect()
     }
 
-    pub fn emissive_shapes(&self) -> dyn Iterator<Item = *const dyn Shape> {
-        let emissive_shapes = self
-            .shapes
+    pub fn emissive_shapes(&self) -> Vec<Weak<dyn Shape>> {
+        self.shapes
             .iter()
-            .filter(|shape| shape.material().emissive_color != None);
-        emissive_shapes
+            .filter(|shape: &&Rc<dyn Shape>| shape.material().emissive_color != None)
+            .map(|s| Rc::downgrade(&(*s)))
+            .collect()
+    }
+
+    pub fn trace(&self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Color {
+        let ray = self.camera.generate_ray(screen_x, screen_y, rng);
+        let hit: Option<PrimaryHit> = None;
+        for shape in self.shapes.iter() {
+            let hit = (**shape)
+                .primary_intersection(ray)
+                .iter()
+                .filter(|h| h.distance() > f32::EPSILON)
+                .min_by(|a, b| f32::partial_cmp(&a.distance(), &b.distance()).unwrap());
+        }
+        hit.map_or(Color::from_grayscale(0.0), |h| h.albedo())
     }
 }

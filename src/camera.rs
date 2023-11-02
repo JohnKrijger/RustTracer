@@ -40,7 +40,7 @@ impl Camera {
         self.focal_length / self.focal_ratio
     }
 
-    fn generate_ray(self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
+    pub fn generate_ray(&self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
         let aperture_pos = random_point_in_circle(rng);
         let aperture_diameter = self.apperture_diameter();
         let origin = self.pos
