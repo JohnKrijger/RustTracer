@@ -4,14 +4,12 @@ use camera::Camera;
 use color::Color;
 use math::{Point, Vector};
 use minifb::Key;
-use rand::{
-    rngs::{OsRng, StdRng},
-    Rng,
-};
+use rand::rngs::OsRng;
 use scene::Scene;
 use screen::Screen;
 use shapes::{
     material::{Material, MaterialType},
+    plane::Plane,
     sphere::Sphere,
     Shape,
 };
@@ -30,9 +28,9 @@ const HEIGHT: usize = 360;
 fn main() {
     let mut screen = Screen::new(WIDTH, HEIGHT, "Hello rust");
     let camera = Camera::new(
-        Point::new(0.0, 0.0, -10.0),
+        Point::new(0.0, 0.0, -5.0),
         Vector::new(0.0, 0.0, 1.0),
-        120.0,
+        60.0,
         8.0,
         10.0,
     );
@@ -46,7 +44,13 @@ fn main() {
         3.0,
         Material::new(Color::from_grayscale(0.4), MaterialType::Diffuse, None),
     ));
-    let shapes = vec![sphere_1, sphere_2];
+    let plane_1: Rc<dyn Shape> = Rc::new(Plane::new(
+        Vector::up(),
+        -10.0,
+        Material::new(Color::new(0.1, 0.1, 0.9), MaterialType::Diffuse, None),
+    ));
+
+    let shapes = vec![sphere_1, sphere_2, plane_1];
 
     let mut rng = OsRng::default();
     let scene = Scene::new(camera, shapes);
@@ -55,7 +59,6 @@ fn main() {
         for (x, y, px) in screen.iter_over_pixels() {
             *px = scene.trace(x, y, &mut rng).to_byte_format();
         }
-
         screen.update();
     }
 }

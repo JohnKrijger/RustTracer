@@ -60,11 +60,9 @@ impl Screen {
             .iter_mut()
             .enumerate()
             .map(|(pos, color)| {
-                (
-                    ((pos % self.width) as f32) / (self.width as f32),
-                    ((pos / self.width) as f32) / (self.height as f32),
-                    color,
-                )
+                let screen_pos = Self::pixel_to_screen_space(pos, self.width, self.height);
+
+                (screen_pos.0, screen_pos.1, color)
             })
             .collect()
     }
@@ -73,5 +71,47 @@ impl Screen {
         self.window
             .update_with_buffer(&self.buffer, self.width, self.height)
             .unwrap();
+    }
+
+    fn pixel_to_screen_space(pos: usize, screen_width: usize, screen_height: usize) -> (f32, f32) {
+        let screen_x = ((pos % screen_width) as f32 / (screen_width - 1) as f32) * 2.0 - 1.0;
+        let screen_y = (((pos / screen_width) as f32 / (screen_height - 1) as f32) * -2.0 + 1.0)
+            * screen_height as f32
+            / screen_width as f32;
+        (screen_x, screen_y)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Screen;
+
+    const WIDTH: usize = 300;
+    const HEIGHT: usize = 200;
+
+    fn screen() -> Screen {
+        Screen::new(WIDTH, HEIGHT, "test_screen")
+    }
+
+    #[test]
+    fn test_screen_size() {
+        let screen = screen();
+        assert_eq!(screen.width, WIDTH);
+        assert_eq!(screen.height, HEIGHT);
+        assert_eq!(screen.buffer.len(), WIDTH * HEIGHT);
+    }
+
+    #[test]
+    fn test_pixel_to_screen_coordinates() {
+        let aspect_ratio = HEIGHT as f32 / WIDTH as f32;
+        let cases = [
+            (0, -1.0, aspect_ratio),
+            (WIDTH - 1, 1.0, aspect_ratio),
+            (WIDTH * (HEIGHT - 1), -1.0, -aspect_ratio),
+            (WIDTH * HEIGHT - 1, 1.0, -aspect_ratio),
+        ];
+        for (idx, x, y) in cases {
+            assert_eq!(Screen::pixel_to_screen_space(idx, WIDTH, HEIGHT), (x, y))
+        }
     }
 }

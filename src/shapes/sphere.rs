@@ -1,5 +1,4 @@
 use crate::{
-    color::Color,
     math::{Point, Ray},
     ray_hits::primary_hit::PrimaryHit,
 };
@@ -35,11 +34,12 @@ impl Shape for Sphere {
                 vec![cos - d_sqrt, cos + d_sqrt]
             }
             d if d == 0.0 => vec![cos],
-            x => vec![],
+            _ => vec![],
         };
         let material = self.material;
         distances
             .iter()
+            .filter(|d| **d > 0.0)
             .map(|d| {
                 let pos = ray.origin() + ray.direction() * *d;
                 PrimaryHit::new(pos, (pos - self.center).normalized(), *d, material, 0)

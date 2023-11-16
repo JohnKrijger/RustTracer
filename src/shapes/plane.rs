@@ -1,6 +1,6 @@
 use crate::{
-    color::Color,
     math::{Point, Vector},
+    ray_hits::primary_hit::PrimaryHit,
 };
 
 use super::{material::Material, Shape};
@@ -9,32 +9,24 @@ use super::{material::Material, Shape};
 pub struct Plane {
     normal: Vector,
     d: f32,
-    color: Color,
     material: Material,
 }
 
 impl Plane {
-    pub fn new(normal: Vector, d: f32, color: Color, material: Material) -> Self {
+    pub fn new(normal: Vector, d: f32, material: Material) -> Self {
         Self {
             normal: normal.normalized(),
             d,
-            color,
             material,
         }
     }
 
-    pub fn from_point_and_normal(
-        normal: Vector,
-        point: Point,
-        color: Color,
-        material: Material,
-    ) -> Self {
+    pub fn from_point_and_normal(normal: Vector, point: Point, material: Material) -> Self {
         let normal = normal.normalized();
         let d = normal.dot(point - Point::origin());
         Plane {
             normal,
             d,
-            color,
             material,
         }
     }
@@ -45,7 +37,16 @@ impl Shape for Plane {
         &self,
         ray: crate::math::Ray,
     ) -> Vec<crate::ray_hits::primary_hit::PrimaryHit> {
-        todo!()
+        let d = (self.d - (ray.origin() - Point::origin()).dot(self.normal))
+            / ray.direction().dot(self.normal);
+
+        if d <= 0.0 {
+            return Vec::new();
+        }
+
+        let pos = ray.origin() + d * ray.direction();
+        let hit = PrimaryHit::new(pos, self.normal, d, self.material, 0);
+        return vec![hit];
     }
 
     fn has_intersection_between(&self, a: Point, b: Point) -> bool {

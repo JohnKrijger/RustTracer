@@ -41,15 +41,15 @@ impl Camera {
     }
 
     pub fn generate_ray(&self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
-        let aperture_pos = random_point_in_circle(rng);
-        let aperture_diameter = self.apperture_diameter();
+        let aperture_pos = (0.0, 0.0); // random_point_in_circle(rng);
+        let aperture_diameter = 0.0; // self.apperture_diameter();
         let origin = self.pos
             + self.right * aperture_pos.0 * aperture_diameter
             + self.up * aperture_pos.1 * aperture_diameter;
         let target = self.pos
             + self.forward * self.focal_length
-            + self.right * screen_x * self.focal_ratio * self.focal_length
-            + self.up * screen_y * self.focal_ratio * self.focal_length;
+            + self.right * screen_x * self.focal_ratio * self.focal_length * self.sensor_size
+            + self.up * screen_y * self.focal_ratio * self.focal_length * self.sensor_size;
         Ray::new(origin, target - origin)
     }
 }
