@@ -5,7 +5,7 @@ pub mod vector;
 
 use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
 
-use cgmath::{Point3, Vector3};
+use cgmath::{EuclideanSpace, Point3, Vector3};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Point {

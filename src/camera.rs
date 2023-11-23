@@ -41,15 +41,47 @@ impl Camera {
     }
 
     pub fn generate_ray(&self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
-        let aperture_pos = (0.0, 0.0); // random_point_in_circle(rng);
-        let aperture_diameter = 0.0; // self.apperture_diameter();
-        let origin = self.pos
+        let origin = self.generate_ray_origin(rng);
+        let target = self.generate_ray_target(screen_x, screen_y);
+        Ray::new(origin, target - origin).normalized()
+    }
+
+    fn generate_ray_origin(&self, rng: &mut impl Rng) -> Point {
+        let aperture_pos = random_point_in_circle(rng);
+        let aperture_diameter = self.apperture_diameter();
+        self.pos
             + self.right * aperture_pos.0 * aperture_diameter
-            + self.up * aperture_pos.1 * aperture_diameter;
-        let target = self.pos
+            + self.up * aperture_pos.1 * aperture_diameter
+    }
+
+    fn generate_ray_target(&self, screen_x: f32, screen_y: f32) -> Point {
+        self.pos
             + self.forward * self.focal_length
-            + self.right * screen_x * self.focal_ratio * self.focal_length * self.sensor_size
-            + self.up * screen_y * self.focal_ratio * self.focal_length * self.sensor_size;
-        Ray::new(origin, target - origin)
+            + self.right * screen_x * self.focal_length * self.sensor_size
+            + self.up * screen_y * self.focal_length * self.sensor_size
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::f32::consts::PI;
+
+    use crate::math::{Point, Vector};
+
+    use super::Camera;
+
+    #[test]
+    fn test_fov() {
+        let fovs = [30.0, 60.0, 90.0, 120.0];
+
+        for fov in fovs {
+            let camera = Camera::new(Point::origin(), Vector::forward(), fov, 10.0, 0.0);
+            let left_target = camera.generate_ray_target(-1.0, 0.0);
+            let right_target = camera.generate_ray_target(1.0, 0.0);
+            let left_vector = (left_target - Point::origin()).normalized();
+            let right_vector = (right_target - Point::origin()).normalized();
+            let angle = f32::acos(left_vector.dot(right_vector)) * 180.0 / PI;
+            assert_eq!(angle, fov);
+        }
     }
 }

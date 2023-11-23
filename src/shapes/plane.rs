@@ -37,6 +37,7 @@ impl Shape for Plane {
         &self,
         ray: crate::math::Ray,
     ) -> Vec<crate::ray_hits::primary_hit::PrimaryHit> {
+        let ray = ray.normalized();
         let d = (self.d - (ray.origin() - Point::origin()).dot(self.normal))
             / ray.direction().dot(self.normal);
 

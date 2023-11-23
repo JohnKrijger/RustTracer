@@ -15,4 +15,11 @@ impl Ray {
     pub fn direction(&self) -> Vector {
         self.direction
     }
+
+    pub fn normalized(self) -> Ray {
+        Ray {
+            origin: self.origin,
+            direction: self.direction.normalized(),
+        }
+    }
 }

@@ -5,8 +5,10 @@ use crate::color::Color;
 pub struct Screen {
     width: usize,
     height: usize,
-    buffer: Vec<u32>,
+    pixel_buffer: Vec<u32>,
+    color_buffer: Vec<Color>,
     window: Window,
+    sample_count: usize,
 }
 
 impl Screen {
@@ -22,8 +24,10 @@ impl Screen {
         Screen {
             width,
             height,
-            buffer: vec![0; width * height],
+            pixel_buffer: vec![0; width * height],
+            color_buffer: vec![Color::new(0.0, 0.0, 0.0); width * height],
             window,
+            sample_count: 0,
         }
     }
 
@@ -51,16 +55,18 @@ impl Screen {
         if x >= self.width || y >= self.height {
             return false;
         }
-        self.buffer[x + y * self.width] = color.to_byte_format();
+        self.pixel_buffer[x + y * self.width] = color.to_byte_format();
         true
     }
 
-    pub fn iter_over_pixels(&mut self) -> Vec<(f32, f32, &mut u32)> {
-        self.buffer
+    pub fn iter_over_pixels(&mut self) -> Vec<(f32, f32, &mut Color)> {
+        self.sample_count += 1;
+        self.color_buffer
             .iter_mut()
             .enumerate()
             .map(|(pos, color)| {
-                let screen_pos = Self::pixel_to_screen_space(pos, self.width, self.height);
+                let screen_pos: (f32, f32) =
+                    Self::pixel_to_screen_space(pos, self.width, self.height);
 
                 (screen_pos.0, screen_pos.1, color)
             })
@@ -68,8 +74,14 @@ impl Screen {
     }
 
     pub fn update(&mut self) {
+        let pixel_buffer: Vec<u32> = self
+            .color_buffer
+            .iter()
+            .map(|color| (*color / self.sample_count as f32).to_byte_format())
+            .collect();
+
         self.window
-            .update_with_buffer(&self.buffer, self.width, self.height)
+            .update_with_buffer(&pixel_buffer, self.width, self.height)
             .unwrap();
     }
 
@@ -98,7 +110,7 @@ mod tests {
         let screen = screen();
         assert_eq!(screen.width, WIDTH);
         assert_eq!(screen.height, HEIGHT);
-        assert_eq!(screen.buffer.len(), WIDTH * HEIGHT);
+        assert_eq!(screen.pixel_buffer.len(), WIDTH * HEIGHT);
     }
 
     #[test]

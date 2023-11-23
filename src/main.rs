@@ -31,8 +31,8 @@ fn main() {
         Point::new(0.0, 0.0, -5.0),
         Vector::new(0.0, 0.0, 1.0),
         60.0,
-        8.0,
-        10.0,
+        5.0,
+        50.0,
     );
     let sphere_1: Rc<dyn Shape> = Rc::new(Sphere::new(
         Point::new(0.0, 0.0, 0.0),
@@ -57,7 +57,7 @@ fn main() {
 
     while screen.is_open() && !screen.is_key_down(Key::Escape) {
         for (x, y, px) in screen.iter_over_pixels() {
-            *px = scene.trace(x, y, &mut rng).to_byte_format();
+            *px = *px + scene.trace(x, y, &mut rng);
         }
         screen.update();
     }
