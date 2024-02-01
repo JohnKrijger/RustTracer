@@ -82,7 +82,7 @@ impl Vector {
     }
 
     pub fn magnitude_squared(self) -> f32 {
-        if let Vector::Normal { base } = self {
+        if let Vector::Normal { base: _ } = self {
             1.0
         } else {
             self.dot(self)
@@ -90,7 +90,7 @@ impl Vector {
     }
 
     pub fn magnitude(&self) -> f32 {
-        if let Vector::Normal { base } = self {
+        if let Vector::Normal { base: _ } = self {
             1.0
         } else {
             f32::sqrt(self.magnitude_squared())
@@ -98,7 +98,7 @@ impl Vector {
     }
 
     pub fn normalize(&mut self) {
-        if let Vector::Scaled { base } = *self {
+        if let Vector::Scaled { base: _ } = *self {
             *self = self.normalized()
         }
     }

@@ -1,4 +1,4 @@
-use crate::math::{random::random_point_in_circle, Point, Ray, Vector};
+use crate::math::{random, Point, Ray, Vector};
 use rand::Rng;
 use std::f32::consts::PI;
 
@@ -40,14 +40,14 @@ impl Camera {
         self.focal_length / self.focal_ratio
     }
 
-    pub fn generate_ray(&self, screen_x: f32, screen_y: f32, rng: &mut impl Rng) -> Ray {
-        let origin = self.generate_ray_origin(rng);
+    pub fn generate_ray(&self, screen_x: f32, screen_y: f32) -> Ray {
+        let origin = self.generate_ray_origin();
         let target = self.generate_ray_target(screen_x, screen_y);
         Ray::new(origin, target - origin).normalized()
     }
 
-    fn generate_ray_origin(&self, rng: &mut impl Rng) -> Point {
-        let aperture_pos = random_point_in_circle(rng);
+    fn generate_ray_origin(&self) -> Point {
+        let aperture_pos = random::random_point_in_circle();
         let aperture_diameter = self.apperture_diameter();
         self.pos
             + self.right * aperture_pos.0 * aperture_diameter

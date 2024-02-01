@@ -1,7 +1,5 @@
 use std::ops::{Add, Div, Mul};
 
-use cgmath::{num_traits::MulAdd, Angle};
-
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Color {
     red: f32,
@@ -41,6 +39,14 @@ impl Color {
         let result: u32 = ((red as u32) << 16) | ((green as u32) << 8) | blue as u32;
         result
     }
+
+    pub fn black() -> Self {
+        Self {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+        }
+    }
 }
 
 impl Add for Color {
@@ -75,6 +81,18 @@ impl Div<f32> for Color {
             red: self.red / rhs,
             green: self.green / rhs,
             blue: self.blue / rhs,
+        }
+    }
+}
+
+impl Mul for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Color {
+            red: self.red * rhs.red,
+            green: self.green * rhs.green,
+            blue: self.blue * rhs.blue,
         }
     }
 }

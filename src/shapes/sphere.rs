@@ -1,5 +1,5 @@
 use crate::{
-    math::{Point, Ray},
+    math::{point, random, Point, Ray, Vector},
     ray_hits::primary_hit::PrimaryHit,
 };
 
@@ -55,5 +55,16 @@ impl Shape for Sphere {
 
     fn material(&self) -> Material {
         self.material
+    }
+
+    fn random_point_on_front(&self, from: Point) -> (Point, Vector) {
+        let normal = (random::random_point_on_sphere() - Point::origin());
+        let normal = if normal.dot(from - self.center) > 0.0 {
+            normal
+        } else {
+            -normal
+        };
+        let point = self.center + (self.radius) * normal;
+        (point, normal)
     }
 }

@@ -1,5 +1,5 @@
 use crate::{
-    math::{Point, Vector},
+    math::{random, Point, Vector},
     ray_hits::primary_hit::PrimaryHit,
 };
 
@@ -59,5 +59,17 @@ impl Shape for Plane {
 
     fn material(&self) -> Material {
         self.material
+    }
+
+    fn random_point_on_front(&self, from: Point) -> (Point, Vector) {
+        let dir = random::random_point_on_sphere() - Point::origin();
+        let point =
+            from + ((self.d + (from - Point::origin()).dot(dir)) / dir.dot(self.normal)) * dir;
+        let normal = if (self.d + (from.from_origin().dot(self.normal)) > 0.0) {
+            self.normal
+        } else {
+            -self.normal
+        };
+        (point, normal)
     }
 }

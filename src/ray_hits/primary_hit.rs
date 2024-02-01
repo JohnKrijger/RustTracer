@@ -34,4 +34,12 @@ impl PrimaryHit {
     pub fn albedo(&self) -> Color {
         self.material.color
     }
+
+    pub fn pos(&self) -> Point {
+        self.pos
+    }
+
+    pub fn normal(&self) -> Vector {
+        self.normal
+    }
 }

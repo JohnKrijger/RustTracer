@@ -37,7 +37,11 @@ fn main() {
     let sphere_1: Rc<dyn Shape> = Rc::new(Sphere::new(
         Point::new(0.0, 0.0, 0.0),
         2.0,
-        Material::new(Color::new(0.2, 0.8, 0.3), MaterialType::Diffuse, None),
+        Material::new(
+            Color::new(0.2, 0.8, 0.3),
+            MaterialType::Diffuse,
+            Some((Color::new(0.2, 0.8, 0.3))),
+        ),
     ));
     let sphere_2: Rc<dyn Shape> = Rc::new(Sphere::new(
         Point::new(-5.0, -5.0, 5.0),
@@ -52,12 +56,11 @@ fn main() {
 
     let shapes = vec![sphere_1, sphere_2, plane_1];
 
-    let mut rng = OsRng::default();
     let scene = Scene::new(camera, shapes);
 
     while screen.is_open() && !screen.is_key_down(Key::Escape) {
         for (x, y, px) in screen.iter_over_pixels() {
-            *px = *px + scene.trace(x, y, &mut rng);
+            *px = *px + scene.trace(x, y);
         }
         screen.update();
     }
